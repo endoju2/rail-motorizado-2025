@@ -1,0 +1,68 @@
+# Control de Gimbal para Cámara
+
+## Descripción
+Este proyecto utiliza un ESP32 para controlar un sistema de gimbal para cámara con tres ejes de movimiento. Incluye una interfaz de usuario con pantalla LCD y botones, permitiendo configurar timelapse y controlar la posición precisa de la cámara a través de un joystick analógico.
+
+## Componentes
+- Microcontrolador: ESP32 32E WROOM (Freenove) - *actualizado desde ESP32 WROOM*
+- Pantalla LCD 20x4 con interfaz I2C
+- 4 botones físicos (UP, DOWN, ENTER, BACK)
+- Joystick analógico R300B-M2 5K
+- 3 motores paso a paso:
+  - 1 para el eje X en el rail
+  - 2 para rotaciones Y/Z en el gimbal
+- Drivers TMC2209 v1.3 para los motores
+
+## Funcionamiento
+El dispositivo realiza las siguientes funciones:
+1. Proporciona una interfaz de menú navegable mediante botones físicos
+2. Permite configurar parámetros de la cámara (tiempo de exposición)
+3. Configura modo timelapse (tiempo total, intervalo)
+4. Controla el posicionamiento preciso del gimbal en tres ejes (X, Y, Z)
+5. Ofrece calibración del joystick
+6. Almacena configuración en la memoria EEPROM
+
+## Conexiones
+- I2C: 
+  - SDA: GPIO21
+  - SCL: GPIO22
+- Botones:
+  - UP: GPIO26
+  - DOWN: GPIO27
+  - ENTER: GPIO14
+  - BACK: GPIO25
+- Joystick:
+  - X: GPIO32
+  - Y: GPIO33
+  - Z: GPIO34
+  - Botón de calibración: GPIO13
+
+## Librerías utilizadas
+- Wire: Para comunicación I2C
+- LiquidCrystal_I2C: Control de la pantalla LCD
+- EEPROM: Almacenamiento de configuración
+- AccelStepper: Control avanzado de motores paso a paso
+
+## Versiones
+- v0.1: Implementación inicial con ESP32 WROOM, pantalla LCD y botones
+- v0.2: Integración del joystick y calibración
+- v0.3: Control básico de motores paso a paso
+- v0.4: Implementación completa del control de gimbal
+- v1.0: Migración a ESP32 32E WROOM Freenove con todas las funcionalidades
+
+## Notas y problemas conocidos
+- Verificar la dirección I2C de la pantalla LCD (el código usa 0x27 por defecto)
+- Los valores de mapeo del joystick pueden necesitar ajustes:
+  ```cpp
+  valorXMapeado = -map(valorX, 0, 4095, -100, 100) - offsetX;
+  valorYMapeado = -(map(valorY, 0, 4095, -100, 100) - offsetY);
+  valorZMapeado = (map(valorZ, 0, 4095, -100, 100) - offsetZ);
+  ```
+- Es recomendable implementar límites de movimiento para los motores
+- Confirmar que los pines GPIO elegidos están disponibles en la placa Freenove
+
+## Plan de desarrollo
+1. Fase inicial: Configuración de pantalla LCD y verificación de comunicación I2C
+2. Segunda fase: Implementación de navegación por menús con botones
+3. Tercera fase: Integración del joystick y calibración
+4. Fase final: Control de motores paso a paso con drivers TMC2209
